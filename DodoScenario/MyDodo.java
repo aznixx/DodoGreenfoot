@@ -31,6 +31,19 @@ public class MyDodo extends Dodo
             showError( "I'm stuck!" );
         }
     }
+    
+    public void climbOverFence() {
+        if (fenceAhead()) {
+            turnLeft();
+            move();
+            turnRight();
+            move();
+            move();
+            turnRight();
+            move();
+            turnLeft();
+        }
+    }
 
     /**
      * Test if Dodo can move forward, (there are no obstructions
@@ -44,7 +57,7 @@ public class MyDodo extends Dodo
      *                      (an obstruction or end of world ahead)
      */
     public boolean canMove() {
-        if ( borderAhead() ){
+        if ( borderAhead() || fenceAhead() ){
             return false;
         } else {
             return true;
@@ -90,6 +103,24 @@ public class MyDodo extends Dodo
         while ( nrStepsTaken < distance ) { // check if more steps must be taken  
             move();                         // take a step
             nrStepsTaken++;                 // increment the counter
+            System.out.println("Moved: " + nrStepsTaken + "steps further");
+        }
+    }
+    
+    public void stepOneCellBackwards() {
+        turn180();
+            move();
+            turn180();
+    }
+    
+    public boolean grainAhead() {
+        move();
+        if (onGrain()) {
+            stepOneCellBackwards();
+            return true;
+        } else {
+            stepOneCellBackwards();
+             return false;
         }
     }
 
@@ -106,7 +137,7 @@ public class MyDodo extends Dodo
 
     public void walkToWorldEdgePrintingCoordinates( ){
         while( ! borderAhead() ){
-            // print coordinates
+            System.out.println("X cord: "+ getX() + " Y cord: " + getY());
             move();
         }
     }
@@ -124,10 +155,16 @@ public class MyDodo extends Dodo
      */
 
     public boolean canLayEgg( ){
-//        if( onEgg() ){
-            // E
-//        }else{
+            if( onEgg() ){
+             return false;
+       }else{
             return true;
-//        }
-    }  
+      }
+    }
+    
+    public void turn180() {
+        for (int i = 0; i < 2; i++) {
+            turnRight();
+        }
+    }
 }
