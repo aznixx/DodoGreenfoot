@@ -123,7 +123,97 @@ public class MyDodo extends Dodo
              return false;
         }
     }
+    
+    public void walkToWorldEdge(){
+        while( ! borderAhead() ){
+            move();
+        }
+    }
+    
+    public void worldEmptyNestsTopRow() {
+        while (!borderAhead()) {
+        if (onNest()) {
+            if (!onEgg()) {
+                layEgg();
+            }
+        }
+        move();
+    }
+    }
+    
+    public void walkToWorldEdgeClimbingOverFencesNest() {
+        while(!borderAhead()){
 
+            if (fenceAhead()) {
+            climbOverFence();
+            } 
+            
+            if (onNest()) {
+            layEgg();
+            }
+            move();
+        }
+    }
+    
+    public void walkAroundFencedArea() {
+    while (!onEgg()) {
+
+        turnRight();
+
+        if (!fenceAhead()) {
+            move();
+        } else {
+            turnLeft();
+
+            if (!fenceAhead()) {
+                move();
+            } else {
+                turnLeft();
+            }
+        }
+    }
+}
+
+    
+    public void goBackToStartOfRowAndFaceBack() {
+        setDirection(WEST);
+        walkToWorldEdge();
+        setDirection(EAST);
+    }
+    
+    public void walkToWorldEdgeClimbingOverFences() {
+        while( ! borderAhead() ){
+
+            if (fenceAhead()) {
+            climbOverFence();
+        } else {
+             System.out.println("X cord: "+ getX() + " Y cord: " + getY());
+            move();
+        }
+        }
+    }
+    
+    public void pickUpGrainsAndPrintCoordinates() {
+        while (!borderAhead()) {
+            if (onGrain()) {
+                pickUpGrain();
+                System.out.println("Picked up grain on X: " + getX() + " Y: " + getY() );
+            } else {
+                move();
+            }
+        }
+    }
+    
+    public void gotoEgg() {
+       while (!onEgg()) {
+           move();
+           
+           if (borderAhead()) { 
+            break;
+            }
+               
+       }
+    }
     
     
     
