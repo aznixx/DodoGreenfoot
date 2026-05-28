@@ -174,6 +174,155 @@ public class MyDodo extends Dodo
     }
 }
 
+public void check360ForNest(int oldDirection) {
+        if (!onNest()) {
+            if (nestAhead()) {
+                move();
+            } 
+            turnRight();
+            if (!nestAhead()) {
+                turnLeft();
+                turnLeft();
+                if (nestAhead()) {
+                    move();
+                }
+            }
+        }
+        
+        setDirection(oldDirection);
+        
+    }
+
+public void eggTrailToNest() {
+        int oldDirection;
+        
+        
+        while (!onNest()) {
+            if(eggAhead()) {
+                move();
+                
+            } else {
+                turnLeft();
+                if (eggAhead()) {
+                    move();
+                    
+                } else {
+                    turnRight();
+                    turnRight();
+                    if (eggAhead()) {
+                        move();
+                    }
+                }
+            }
+            
+            oldDirection = getDirection();
+            
+            check360ForNest(oldDirection);
+            
+            
+            
+        }
+    }
+    
+    public void faceEast() {
+        while (getDirection() != EAST) {
+            turnRight();
+            if (getDirection() == EAST) {
+                break;
+            }
+        }
+    }
+    
+    public boolean validCoordinates(int x, int y) {
+        int maxX = getWorld().getWidth();
+        int maxY = getWorld().getHeight();
+        
+        if (x >= maxX || x < 0) {
+            showError("Invalid coordinates");
+            return false;
+        }
+        
+        if (y >= maxY || y < 0) {
+        showError("Invalid coordinates");
+            return false;
+        }
+        
+        return true;
+    }
+    
+    public void goBackToStartOfRowAndFaceBack(int x, int y) {
+        goToLocation(0, y);
+        setDirection(EAST);
+    }
+    
+    public int countEggsInRow() {
+    int y = getY();
+        
+    int eggCount = 0;
+    
+    goBackToStartOfRowAndFaceBack(0, y);
+    
+    if (onEgg()) {
+        eggCount++;
+    }
+    
+    while (!borderAhead()) {
+        move();
+        if (onEgg()) {
+            eggCount++;
+        }
+    }
+    
+    goBackToStartOfRowAndFaceBack(0, y);
+    
+    return eggCount;
+}
+    
+    public void goToLocation(int x, int y) {
+        if (!validCoordinates(x, y)) {
+            return;
+        }
+        
+        while (getX() < x) {
+            setDirection(EAST);
+            move();
+        }
+        
+        while (getX() > x) {
+            setDirection(WEST);
+            move();
+        }
+        
+        while (getY() < y) {
+            setDirection(SOUTH);
+            move();
+        }
+        
+        while (getY() > y) {
+            setDirection(NORTH);
+            move();
+        }
+    }
+    
+    public void findNestInMaze() {
+    while (!onNest()) {
+
+        turnRight();
+
+        if (!fenceAhead()) {
+            move();
+        } else {
+            turnLeft();
+
+            if (!fenceAhead()) {
+                move();
+            } else {
+                turnLeft();
+            }
+        }
+    }
+}
+
     
     public void goBackToStartOfRowAndFaceBack() {
         setDirection(WEST);
