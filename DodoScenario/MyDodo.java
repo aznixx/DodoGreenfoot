@@ -103,7 +103,7 @@ public class MyDodo extends Dodo
         while ( nrStepsTaken < distance ) { // check if more steps must be taken  
             move();                         // take a step
             nrStepsTaken++;                 // increment the counter
-            System.out.println("Moved: " + nrStepsTaken + "steps further");
+            System.out.println("Bewogen: " + nrStepsTaken + "stappen verder");
         }
     }
     
@@ -276,6 +276,87 @@ public void eggTrailToNest() {
     goBackToStartOfRowAndFaceBack(0, y);
     
     return eggCount;
+}
+
+public int rowWithMostEggs() {
+        int startX = getX();
+        int startY = getY();
+        int startDirection = getDirection();
+        int rowWithMostEggs = 0;
+        int mostEggs = -1;
+        
+        for (int row = 0; row < getWorld().getHeight(); row++) {
+            goToLocation(0, row);
+            
+            int eggsInRow = countEggsInRow();
+            System.out.println("Rij " + row + ": " + eggsInRow + " eieren");
+            
+            if (eggsInRow > mostEggs) {
+                mostEggs = eggsInRow;
+                rowWithMostEggs = row;
+            }
+        }
+        
+        goToLocation(startX, startY);
+        setDirection(startDirection);
+        
+        System.out.println("Rij met de meeste eieren: " + rowWithMostEggs);
+        
+        return rowWithMostEggs;
+    }
+    
+    public double averageEggsPerRow() {
+        int startX = getX();
+        int startY = getY();
+        int startDirection = getDirection();
+        int totalEggCount = 0;
+        int numberOfRows = getWorld().getHeight();
+        
+        for (int row = 0; row < numberOfRows; row++) {
+            goToLocation(0, row);
+            totalEggCount += countEggsInRow();
+        }
+        
+        double average = (double) totalEggCount / numberOfRows;
+        
+        goToLocation(startX, startY);
+        setDirection(startDirection);
+        
+        System.out.println("Gemiddeld aantal eieren per rij: " + average);
+        
+        return average;
+    }
+
+
+public int countEggsInWorld() {
+        int startX = getX();
+        int startY = getY();
+        int startDirection = getDirection();
+        int totalEggCount = 0;
+        
+        for (int row = 0; row < getWorld().getHeight(); row++) {
+            goToLocation(0, row);
+            
+            int eggsInRow = countEggsInRow();
+            totalEggCount += eggsInRow;
+            
+            System.out.println("Rij " + row + ": " + eggsInRow + " eieren");
+            System.out.println("Totaal tot nu toe: " + totalEggCount);
+        }
+        
+        goToLocation(startX, startY);
+        setDirection(startDirection);
+        
+        System.out.println("Aantal eieren in de wereld: " + totalEggCount);
+        
+        return totalEggCount;
+    }
+    
+public void layTrailOfEggs(int amount) {
+    for (int i = 0; i < amount; i++) {
+        layEgg();
+        move();
+    }
 }
     
     public void goToLocation(int x, int y) {
