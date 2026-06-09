@@ -487,4 +487,99 @@ public void layTrailOfEggs(int amount) {
             turnRight();
         }
     }
+    
+    public void fixIncorrectBit() {
+        if (onEgg()) {
+            pickUpEgg();
+        } else {
+            layEgg();
+        }
+    }
+    
+    public int getIncorrectRowNr() {
+        int startX = getX();
+        int startY = getY();
+        int startDirection = getDirection();
+        int rowNumber = 0;
+        int incorrectRowNumber = -1;
+        
+        while (rowNumber < getWorld().getHeight()) {
+            goToLocation(0, rowNumber);
+            
+            if (countEggsInRow() % 2 == 1) {
+                incorrectRowNumber = rowNumber;
+            }
+            
+            rowNumber++;
+        }
+        
+        goToLocation(startX, startY);
+        setDirection(startDirection);
+        
+        System.out.println("Foute rij: " + incorrectRowNumber);
+        
+        return incorrectRowNumber;
+    }
+    
+    public int countEggsInColumn(int columnNumber) {
+        int rowNumber = 0;
+        int eggCount = 0;
+        
+        while (rowNumber < getWorld().getHeight()) {
+            goToLocation(columnNumber, rowNumber);
+            
+            if (onEgg()) {
+                eggCount++;
+            }
+            
+            rowNumber++;
+        }
+        
+        return eggCount;
+    }
+    
+    public int getIncorrectColumnNr() {
+        int startX = getX();
+        int startY = getY();
+        int startDirection = getDirection();
+        int columnNumber = 0;
+        int incorrectColumnNumber = -1;
+        
+        while (columnNumber < getWorld().getWidth()) {
+            if (countEggsInColumn(columnNumber) % 2 == 1) {
+                incorrectColumnNumber = columnNumber;
+            }
+            
+            columnNumber++;
+        }
+        
+        goToLocation(startX, startY);
+        setDirection(startDirection);
+        
+        System.out.println("Foute kolom: " + incorrectColumnNumber);
+        
+        return incorrectColumnNumber;
+    }
+    
+    public void fixParityBit() {
+        int startX = getX();
+        int startY = getY();
+        int startDirection = getDirection();
+        int rowNumber = getIncorrectRowNr();
+        int columnNumber = getIncorrectColumnNr();
+        
+        if (rowNumber == -1 || columnNumber == -1) {
+            System.out.println("Geen fout gevonden");
+            goToLocation(startX, startY);
+            setDirection(startDirection);
+            return;
+        }
+        
+        goToLocation(columnNumber, rowNumber);
+        fixIncorrectBit();
+        goToLocation(startX, startY);
+        setDirection(startDirection);
+        
+        System.out.println("Fout gefixt op rij " + rowNumber + ", kolom " + columnNumber);
+    }
 }
