@@ -1,5 +1,5 @@
 import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
-
+import java.util.List;
 /**
  *
  * @author Sjaak Smetsers & Renske Smetsers-Weeda
@@ -582,4 +582,42 @@ public void layTrailOfEggs(int amount) {
         
         System.out.println("Fout gefixt op rij " + rowNumber + ", kolom " + columnNumber);
     }
+    
+    public void makeListOfSurpriseEggs() {
+        int size = 10;
+
+        List<SurpriseEgg> eggs = SurpriseEgg.generateListOfSurpriseEggs(size, getWorld());
+
+        getAverageValueOfEggs(eggs);
+
+        for (SurpriseEgg egg : eggs) {
+            printCoordinateOfEggAndValue(egg);
+        }
+    
+    
+    }
+    
+    public void printCoordinateOfEggAndValue(Egg egg) {
+    System.out.println("Egg is op x: " + egg.getX() + ", y: " + egg.getY());
+    System.out.println("Waarde van DEZE ei: " + egg.getValue());
+}
+    
+    
+public void makeListOfSupriseEggsAndPrintCoordinates() {
+    makeListOfSurpriseEggs();
+}
+
+public double getAverageValueOfEggs(List<SurpriseEgg> eggs) {
+    int total = 0;
+
+    for (SurpriseEgg egg : eggs) {
+        total = total + egg.getValue();
+    }
+
+    double average = (double) total / eggs.size();
+
+    System.out.println("Gemiddelde waarde van eieren: " + average);
+
+    return average;
+}
 }
