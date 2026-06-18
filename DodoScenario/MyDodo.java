@@ -8,6 +8,8 @@ import java.util.List;
 public class MyDodo extends Dodo
 {
     private int myNrOfEggsHatched;
+    private int myNrOfStepsTaken;
+    private int myScore;
     
     public MyDodo() {
         super( EAST );
@@ -619,5 +621,232 @@ public double getAverageValueOfEggs(List<SurpriseEgg> eggs) {
     System.out.println("Gemiddelde waarde van eieren: " + average);
 
     return average;
+}
+
+public void pickUpNearestEggInList() {
+    resetRace();
+
+    List<Egg> eggList = getWorld().getObjects(Egg.class);
+    Egg nearestEgg = getNearestEggInList(eggList);
+
+    if (nearestEgg != null) {
+        walkToLocationForRace(nearestEgg.getX(), nearestEgg.getY());
+    }
+}
+
+/**
+ * Berekent de afstand tussen Dodo en een ei.
+ */
+public int distanceToEgg(Egg egg) {
+    return distanceBetween(getX(), getY(), egg.getX(), egg.getY());
+}
+
+/**
+ * Berekent de afstand tussen twee locaties.
+ */
+public int distanceBetween(int x1, int y1, int x2, int y2) {
+    int distanceX = Math.abs(x2 - x1);
+    int distanceY = Math.abs(y2 - y1);
+
+    return distanceX + distanceY;
+}
+
+public Egg getNearestEggInList(List<Egg> eggList) {
+    if (eggList.size() == 0) {
+        return null;
+    }
+
+    Egg nearestEgg = eggList.get(0);
+    int nearestDistance = distanceToEgg(nearestEgg);
+
+    for (Egg egg : eggList) {
+        int currentDistance = distanceToEgg(egg);
+        System.out.println("Egg op x: " + egg.getX() + ", y: " + egg.getY()
+            + ", afstand: " + currentDistance);
+
+        if (currentDistance < nearestDistance) {
+            nearestDistance = currentDistance;
+            nearestEgg = egg;
+        }
+    }
+
+    System.out.println("Dichtstbijzijnde ei op x: " + nearestEgg.getX()
+        + ", y: " + nearestEgg.getY());
+
+    return nearestEgg;
+}
+
+public void moveRandomly() {
+    resetRace();
+
+    while (myNrOfStepsTaken < Mauritius.MAXSTEPS) {
+        setDirection(randomDirection());
+
+        if (!borderAhead() && !fenceAhead()) {
+            moveOneStepForRace();
+        }
+    }
+
+    showCompliment("Score: " + myScore);
+    Greenfoot.stop();
+}
+
+public int getNrOfStepsLeft() {
+    return Mauritius.MAXSTEPS - myNrOfStepsTaken;
+}
+/**
+ * Zet alle gegevens van de race terug naar de beginstand.
+ */
+public void resetRace() {
+    myNrOfStepsTaken = 0;
+    myScore = 0;
+    updateRaceScoreboard();
+    
+    // Pak direct een ei op als Mimi erop staat
+    pickUpEggForRace();
+}
+
+/**
+ * Pakt een ei op en telt de waarde bij de score op.
+ */
+public void pickUpEggForRace() {
+    if (onEgg()) {
+        Egg egg = pickUpEgg();
+        myScore = myScore + egg.getValue();
+        myNrOfEggsHatched++;
+        updateRaceScoreboard();
+    }
+}
+
+/**
+ * Zoekt het beste ei dat nog bereikbaar is.
+ * Hierbij wordtdan gekeken naar de waarde van het ei
+ * en hoeveel stappen nodig zijn om er te komen.
+ */
+public Egg getBestEggForRace(List<Egg> eggList) {
+    Egg bestEgg = null;
+    int bestScore = -1;
+    int bestDistance = 0;
+
+    for (Egg egg : eggList) {
+        int distance = distanceToEgg(egg);
+        
+        // Alleen eieren bekijken die nog bereikbaar zijn
+        if (distance <= getNrOfStepsLeft()) {
+            
+            // Hoe hoger de waarde en hoe kleiner de afstand,
+            // hoe beter de score van het ei dus dan gaat hij voor die ei
+            int eggScore = egg.getValue() * 1000 / (distance + 1);
+
+            if (bestEgg == null || eggScore > bestScore || eggScore == bestScore && distance < bestDistance) {
+                bestEgg = egg;
+                bestScore = eggScore;
+                bestDistance = distance;
+            }
+        }
+    }
+
+    return bestEgg;
+}
+
+/**
+ * Laat Dodo zoveel mogelijk punten verzamelen
+ * binnen het maximale aantal stappen.
+ */
+public void dodoRace() {
+    resetRace();
+
+    while (getNrOfStepsLeft() > 0 && getWorld().getObjects(Egg.class).size() > 0) {
+        List<Egg> eggList = getWorld().getObjects(Egg.class);
+        
+        // Kies het beste ei op dit moment
+        Egg nextEgg = getBestEggForRace(eggList);
+
+        if (nextEgg == null) {
+            break;
+        }
+        
+        // Loop naar het gekozen ei
+        walkToLocationForRace(nextEgg.getX(), nextEgg.getY());
+    }
+
+    updateRaceScoreboard();
+    showCompliment("Score: " + myScore + ", stappen: " + myNrOfStepsTaken);
+    Greenfoot.stop();
+}
+
+
+/**
+ * Zet één stap tijdens de race.
+ * Houdt het aantal stappen en de score bij.
+ */
+public boolean moveOneStepForRace() {
+    
+    // Stop als er geen stappen meer over zijn
+    if (getNrOfStepsLeft() == 0 || borderAhead() || fenceAhead()) {
+        return false;
+    }
+
+    move();
+    myNrOfStepsTaken++;
+    
+    // Kijk of er een ei opgepakt kan worden
+    pickUpEggForRace();
+    updateRaceScoreboard();
+
+    return true;
+}
+
+public void getScore(int score1, int score2) {
+    Mauritius world = (Mauritius) getWorld();
+    world.updateScore(score1, score2);
+}
+
+/**
+ * Werkt het scorebord bij.
+ * Laat zien hoeveel stappen en punten er zijn.
+ */
+public void updateRaceScoreboard() {
+    getScore(getNrOfStepsLeft(), myScore);
+}
+
+/**
+ * Loopt naar een bepaalde locatie.
+ * Tijdens het lopen worden stappen en score bijgehouden.
+ */
+public boolean walkToLocationForRace(int x, int y) {
+    if (!validCoordinates(x, y)) {
+        return false;
+    }
+
+    while (getX() < x && getNrOfStepsLeft() > 0) {
+        setDirection(EAST);
+        if (!moveOneStepForRace()) {
+            return false;
+        }
+    }
+
+    while (getX() > x && getNrOfStepsLeft() > 0) {
+        setDirection(WEST);
+        if (!moveOneStepForRace()) {
+            return false;
+        }
+    }
+
+    while (getY() < y && getNrOfStepsLeft() > 0) {
+        setDirection(SOUTH);
+        if (!moveOneStepForRace()) {
+            return false;
+        }
+    }
+
+    while (getY() > y && getNrOfStepsLeft() > 0) {
+        setDirection(NORTH);
+        if (!moveOneStepForRace()) {
+            return false;
+        }
+    }
+
+    return getX() == x && getY() == y;
 }
 }
