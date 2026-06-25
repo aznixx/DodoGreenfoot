@@ -87,6 +87,8 @@ public class MyDodo extends Dodo
      * Returns the number of eggs Dodo has hatched so far.
      * 
      * @return int number of eggs hatched by Dodo
+     *
+     * van adam
      */
     public int getNrOfEggsHatched() {
         return myNrOfEggsHatched;
@@ -451,7 +453,7 @@ public void layTrailOfEggs(int amount) {
     
     /**
      * Walks to edge of the world printing the coordinates at each step
-     * 
+     *  van adam
      * <p> Initial: Dodo is on West side of world facing East.
      * <p> Final:   Dodo is on East side of world facing East.
      *              Coordinates of each cell printed in the console.
@@ -643,6 +645,7 @@ public int distanceToEgg(Egg egg) {
 
 /**
  * Berekent de afstand tussen twee locaties.
+ * van adam
  */
 public int distanceBetween(int x1, int y1, int x2, int y2) {
     int distanceX = Math.abs(x2 - x1);
@@ -777,7 +780,7 @@ public void dodoRace() {
 
 
 /**
- * Zet één stap tijdens de race.
+ * Zet Ã©Ã©n stap tijdens de race.
  * Houdt het aantal stappen en de score bij.
  */
 public boolean moveOneStepForRace() {
